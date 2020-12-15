@@ -1,23 +1,23 @@
 package com.example.uberclone;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Objects;
+
 public class  DriverLoginActivity extends AppCompatActivity {
 
     private EditText mEmail,mPassword;
-    private Button mLogin,mRegister;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
 
@@ -27,23 +27,20 @@ public class  DriverLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_driver_login);
 
         mAuth=FirebaseAuth.getInstance();
-        firebaseAuthListener=new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user=firebaseAuth.getCurrentUser();
-                if(user!=null)
-                {
-                    Intent intent=new Intent(DriverLoginActivity.this,MapActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+        firebaseAuthListener= firebaseAuth -> {
+            FirebaseUser user=firebaseAuth.getCurrentUser();
+            if(user!=null)
+            {
+                Intent intent=new Intent(DriverLoginActivity.this,DriverMapActivity.class);
+                startActivity(intent);
+                finish();
             }
         };
 
         mEmail=findViewById(R.id.emailDriver);
         mPassword=findViewById(R.id.passwordDriver);
-        mLogin=findViewById(R.id.loginDriver);
-        mRegister=findViewById(R.id.registrationDriver);
+        Button mLogin = findViewById(R.id.loginDriver);
+        Button mRegister = findViewById(R.id.registrationDriver);
 
         mRegister.setOnClickListener(v -> {
             final String email=mEmail.getText().toString();
@@ -53,10 +50,10 @@ public class  DriverLoginActivity extends AppCompatActivity {
                     (DriverLoginActivity.this, task -> {
                         if(!task.isSuccessful())
                         {
-                            Toast.makeText(DriverLoginActivity.this, "Signup error"+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DriverLoginActivity.this, "Signup error"+ Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         else {
-                            String userID=mAuth.getCurrentUser().getUid();
+                            String userID= Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                             DatabaseReference currentUserInDB= FirebaseDatabase.getInstance()
                                     .getReference().child("Users").child("Drivers")
                                     .child(userID);

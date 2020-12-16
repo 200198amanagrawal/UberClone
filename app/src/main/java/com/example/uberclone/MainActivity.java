@@ -23,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+        mCustomer.setOnClickListener(v -> {
+            Intent intent=new Intent(MainActivity.this,CustomerLoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
 
     }
 }
